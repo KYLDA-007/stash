@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>parts register</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        img {
+            width: 150px;
+            float: left;
+            border: 3px solid black;
+            border-radius: 10px;
+        }
+    </style>
+    <script>
+        function přepis(n) {
+            let v =document.getElementById("cislo" + n).value;
+            document.getElementById("vystup" + n).textContent = v;
+        }
+    </script>
+</head>
+<body>
+    <h1>Data list</h1>
+    <hr>
+    <h3><ins>Parts</ins></h3>
+    <ol> 
+        <li>resistors</li>
+        <li>capacitors</li>
+        <li>transistors</li>
+    </ol> 
+    <div class="line"> 
+        <img src="IMAGES/reistor.jpg" />
+        <p>Value: <span id=vystup1>0</span></p>
+        <input type="number" id="cislo1">
+        <button class="přepsat" onclick="přepis(1)">edit</button>
+    </div>
+
+    <div class="line">
+        <img src="IMAGES/kond.webp" />
+        <p>Value: <span id=vystup2>0</span></p>
+        <input type="number" id="cislo2">
+        <button class="přepsat" onclick="přepis(2)">edit</button>
+
+    </div>
+
+    <div class="line">
+        <img src="IMAGES/tran.jpg" />
+        <p>Value: <span id=vystup3>0</span></p>
+        <input type="number" id="cislo3">
+        <button class="přepsat" onclick="přepis(3)">edit</button>
+
+    </div>
+    
+  
+
+
+    
+</body>
+</html>

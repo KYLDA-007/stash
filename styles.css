@@ -1,0 +1,15 @@
+.trida {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    .button {background-color: aqua;}
+}
+.přepsat {
+    color: red;
+}
+.line {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
