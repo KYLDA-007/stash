@@ -17,42 +17,87 @@
         function přepis(n) {
             let v =document.getElementById("cislo" + n).value;
             document.getElementById("vystup" + n).textContent = v;
+
+        }
+        let pocet = 3;
+
+        function pridej() {
+            let nazev = document.getElementById("novyNazev").value;
+            let soubor = document.getElementById("novyObrazek").files[0];
+            if (nazev == "" || !soubor) return;
+            let n = ++pocet;
+            let obr = URL.createObjectURL(soubor);
+
+            document.getElementById("seznam").innerHTML +=
+            `<li id="li${n}"><label for="cislo${n}">${nazev}</label></li>`;
+
+            document.getElementById("polozky").innerHTML +=
+            `<div class="line" id="radek${n}">
+                <img src="${obr}" onclick="otevri(${n})" />
+                <p>Value: <span id="vystup${n}">0</span></p>
+                <input type="number" id="cislo${n}">
+                <button class="přepsat" onclick="přepis(${n})">edit</button>
+                <button class="přepsat" onclick="smaz(${n})">delete</button>
+             </div>`;
+
+        }
+        function smaz(n) {
+            document.getElementById("li" + n).remove();
+            document.getElementById("radek" + n).remove();
         }
     </script>
 </head>
 <body>
     <h1>Data list</h1>
     <hr>
+    <h3><ins>Add part</ins></h3>
+<input type="text" id="novyNazev" placeholder="name of part">
+<input type="file" id="novyObrazek" accept="image/*">
+<button class="přepsat" onclick="pridej()">add</button>
     <h3><ins>Parts</ins></h3>
-    <ol> 
-        <li><label for="cislo1">resistors</label></li>
-        <li><label for="cislo2">capacitors</label></li>
-        <li><label for="cislo3">transistors</label></li>
+    <ol id="seznam"> 
+        <li id="li1"><label for="cislo1">resistors</label></li>
+        <li id="li2"><label for="cislo2">capacitors</label></li>
+        <li id="li3"><label for="cislo3">transistors</label></li>
        
     </ol> 
-    <div class="line"> 
-        <img src="IMAGES/reistor.jpg" />
-        <p>Value: <span id=vystup1>0</span></p>
-        <input type="number" id="cislo1">
-        <button class="přepsat" onclick="přepis(1)">edit</button>
+    <div id="polozky">    
+        <div class="line" id="radek1"> 
+            <img src="IMAGES/reistor.jpg" onclick="otevri(1)"/>
+            <p>Value: <span id=vystup1>0</span></p>
+            <input type="number" id="cislo1">
+            <button class="přepsat" onclick="přepis(1)">edit</button>
+            <button class="přepsat" onclick="smaz(1)">delete</button>
+        </div>
+
+        <div class="line" id="radek2">
+            <img src="IMAGES/kond.webp" onclick="otevri(2)" />
+            <p>Value: <span id=vystup2>0</span></p>
+            <input type="number" id="cislo2">
+            <button class="přepsat" onclick="přepis(2)">edit</button>
+            <button class="přepsat" onclick="smaz(2)">delete</button>
+
+        </div>
+
+        <div class="line" id="radek3">
+            <img src="IMAGES/tran.jpg" onclick="otevri(3)" />
+            <p>Value: <span id=vystup3>0</span></p>
+            <input type="number" id="cislo3">
+            <button class="přepsat" onclick="přepis(3)">edit</button>
+            <button class="přepsat" onclick="smaz(3)">delete</button>
+
+        </div>
     </div>
 
-    <div class="line">
-        <img src="IMAGES/kond.webp" />
-        <p>Value: <span id=vystup2>0</span></p>
-        <input type="number" id="cislo2">
-        <button class="přepsat" onclick="přepis(2)">edit</button>
-
+<div id="okno">
+    <div id="oknoObsah">
+        <h2 id="oknoNadpis"></h2>
+        <input type="text" id="novyTyp" placeholder="type, e.g. BC337">
+        <button class="přepsat" onclick="přidejTyp()"">add</button>
+        <ul id="seznamTypu"></ul>
+        <button class="přepsat" onclick="zavri()">close</button>
     </div>
-
-    <div class="line">
-        <img src="IMAGES/tran.jpg" />
-        <p>Value: <span id=vystup3>0</span></p>
-        <input type="number" id="cislo3">
-        <button class="přepsat" onclick="přepis(3)">edit</button>
-
-    </div>
-
+</div>
 
 </body>
 </html>
