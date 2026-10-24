@@ -40,6 +40,9 @@
         state = n;
         let name = document.querySelector('label[for="number' + n + '"]').textContent;
         document.getElementById("windowTitle").textContent = name;
+        let sel = document.getElementById("newUnit");
+        fill("newUnit", units[n] || []);
+        fill("newVolt", volts[n] || []);
         drawTypes();
         document.getElementById("window").style.display = "block";
     }
@@ -51,7 +54,12 @@
         let t = document.getElementById("newType").value;
         if (t === "") return;
         if (!types[state]) types[state] = [];
-        types[state].push({ name: t, count: 0});
+        let name = t;
+        for (let id of ["newUnit", "newVolt"]) {
+            let sel = document.getElementById(id);
+            if (sel.style.display !== "none") name += " " + sel.value;
+        }
+        types[state].push({ name: name, count: 0});
         document.getElementById("newType").value = "";
         drawTypes();
         safe();
@@ -100,8 +108,27 @@
         for (let k in types) updateSum(k);
     };
 
+    let units = {
+        1:["\u03A9", "k\u03A9", "M\u03A9"],
+        2:["pF","nF","\u00B5F", "mF"],
+        3:["TO-92","TO-126","TO-220","TO-220F","TO-247","TO-3","TO-18","SOT-23","SOT-89","SOT-223","SOT-323"]
+
+    };
+    let volts = {
+        2:["10V","16V","25V","35V","50","63V","100V","160V"]
+    };
+    function fill(id, list) {
+        let sel = document.getElementById(id);
+        sel.innerHTML = "";
+        for (let x of list) sel.innerHTML += `<option>${x}</option>`;
+        sel.style.display = list.length ? "inline" : "none";
+
+
+    }
+
 
     </script>
+     
 </head>
 <body>
     <h1>List of parts</h1>
@@ -143,11 +170,14 @@
     <div id="windowObsah">
         <h2 id="windowTitle"></h2>
         <input type="text" id="newType" placeholder="add type">
+        <select id="newUnit"></select>
+        <select id="newVolt"></select>
         <button class="rename" onclick="addTyp()">add</button>
         <ul id="seznamTypu"></ul>
         <button class="rename" onclick="closeWindow()">close</button>
     </div>
 </div>
+
 
 </body>
 </html>
