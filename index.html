@@ -5,93 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>parts register</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        img {
-            width: 150px;
-            float: left;
-            border: 3px solid black;
-            border-radius: 10px;
-        }
-    </style>
+
     <script>
        
-        let pocet = 3;
+        let count = 3;
 
-        function pridej() {
-            let nazev = document.getElementById("novyNazev").value;
-            let soubor = document.getElementById("novyObrazek").files[0];
-            if (nazev == "" || !soubor) return;
-            let n = ++pocet;
+        function add() {
+            let name = document.getElementById("newName").value;
+            let soubor = document.getElementById("newPicture").files[0];
+            if (name === "" || !soubor) return;
+            let n = ++count;
             let obr = URL.createObjectURL(soubor);
 
             document.getElementById("seznam").innerHTML +=
-            `<li id="li${n}"><label for="cislo${n}">${nazev}</label></li>`;
+            `<li id="li${n}"><label for="number${n}">${name}</label></li>`;
 
-            document.getElementById("polozky").innerHTML +=
-            `<div class="line" id="radek${n}">
-                <img src="${obr}" onclick="otevri(${n})" />
-                <p>Value: <span id="vystup${n}">0</span></p>
-                <button class="přepsat" onclick="smaz(${n})">delete</button>
+            document.getElementById("items").innerHTML +=
+            `<div class="line" id="line${n}">
+                <img src="${obr}" onclick="openWindow(${n})" />
+                <p>count: <span id="output${n}">0</span></p>
+                <button class="rename" onclick="removePart(${n})">delete</button>
              </div>`;
 
         }
-        function smaz(n) {
+        function remove(n) {
             document.getElementById("li" + n).remove();
-            document.getElementById("radek" + n).remove();
+            document.getElementById("line" + n).remove();
         }
 
-    let typy = {};
-    let aktualni = 0;
+    let types = JSON.parse(localStorage.getItem("types")) || {};
+    let state = 0;
 
-    function otevri(n) {
-        aktualni = n;
-        let nazev = document.querySelector('label[for="cislo' + n + '"]').textContent;
-        document.getElementById("oknoNadpis").textContent = nazev;
-        vykresliTypy();
-        document.getElementById("okno").style.display = "block";
+    function openWindow(n) {
+        state = n;
+        let name = document.querySelector('label[for="number' + n + '"]').textContent;
+        document.getElementById("windowTitle").textContent = name;
+        drawTypes();
+        document.getElementById("window").style.display = "block";
     }
-    function zavri () {
-        document.getElementById("okno").style.display = ("none");
+    function closeWindow () {
+        document.getElementById("window").style.display = "none";
 
     }
-    function pridejTyp() {
-        let t = document.getElementById("novyTyp").value;
+    function addTyp() {
+        let t = document.getElementById("newType").value;
         if (t === "") return;
-        if (!typy[aktualni]) typy[aktualni] = [];
-        typy[aktualni].push({ nazev: t, pocet: 0});
-        document.getElementById("novyTyp").value = "";
-        vykresliTypy();
+        if (!types[state]) types[state] = [];
+        types[state].push({ name: t, count: 0});
+        document.getElementById("newType").value = "";
+        drawTypes();
+        safe();
     }
-    function vykresliTypy() {
-        let seznam = typy[aktualni] || [];
+    function drawTypes() {
+        let seznam = types[state] || [];
         let html = "";
         for (let i = 0; i < seznam.length; i++) {
-            html += `<li>${seznam[i].nazev}
-                <input type="number" value="${seznam[i].pocet}" onchange="zmenPocet(${i}, this.value)">
-                <button class="přepsat" onclick="smazTyp(${i})">delete</button>
+            html += `<li>${seznam[i].name}
+                <input type="number" value="${seznam[i].count}" onchange="changeCount(${i}, this.value)">
+                <button class="rename" onclick="removeTyp(${i})">delete</button>
             </li>`;
         }
        document.getElementById("seznamTypu").innerHTML = html;
     }
 
-    function zmenPocet(i, hodnota) {
-        typy[aktualni][i].pocet = hodnota;
-        spocitej();
+    function changeCount(i, value) {
+        types[state][i].count = value;
+        updateSum(state);
+        safe();
     }
 
-    function smazTyp(i) {
-        typy[aktualni].splice(i, 1);
-        vykresliTypy();
-        spocitej();
-    }
-    function spocitej() {
-        let soucet = 0;
-        let seznam = typy[aktualni] || [];
-        for (let i = 0; i < seznam.length; i++) {
-            soucet += Number(seznam[i].pocet);
+    function updateSum(k) {
+        let sum = 0;
+        for (let t of types[k] || []) sum += Number(t.count);
+        let el = document.getElementById("output" + k);
+        if (el) el.textContent = sum;
         }
-        document.getElementById("vystup" + aktualni).textContent = soucet;
+    function removePart(n) {
+        if (!confirm("reallyRemove??")) return;
+        document.getElementById("li" + n).remove();
+        document.getElementById("line" + n).remove();
     }
+    function removeTyp(i) {
+        if (!confirm("reallyRemove??")) return;
+        types[state].splice(i, 1);
+        drawTypes();
+        updateSum(state);
+        safe();
+        
+    }
+    function safe() {
+        localStorage.setItem("types", JSON.stringify(types));
+    }
+    window.onload = function () {
+        for (let k in types) updateSum(k);
+    };
+
 
     </script>
 </head>
@@ -99,45 +107,45 @@
     <h1>List of parts</h1>
     <hr>
     <h3><ins>Add part</ins></h3>
-<input type="text" id="novyNazev" placeholder="name of part">
-<input type="file" id="novyObrazek" accept="image/*">
-<button class="přepsat" onclick="pridej()">add</button>
+<input type="text" id="newName" placeholder="name of part">
+<input type="file" id="newPicture" accept="image/*">
+<button class="rename" onclick="add()">add</button>
     <h3><ins>Parts</ins></h3>
     <ol id="seznam"> 
-        <li id="li1"><label for="cislo1">resistors</label></li>
-        <li id="li2"><label for="cislo2">capacitors</label></li>
-        <li id="li3"><label for="cislo3">transistors</label></li>
+        <li id="li1"><label for="number1">resistors</label></li>
+        <li id="li2"><label for="number2">capacitors</label></li>
+        <li id="li3"><label for="number3">transistors</label></li>
        
     </ol> 
-    <div id="polozky">    
-        <div class="line" id="radek1"> 
-            <img src="IMAGES/reistor.jpg" onclick="otevri(1)"/>
-            <p>Value: <span id=vystup1>0</span></p>
-            <button class="přepsat" onclick="smaz(1)">delete</button>
+    <div id="items">    
+        <div class="line" id="line1"> 
+            <img src="IMAGES/reistor.jpg" onclick="openWindow(1)"/>
+            <p>count: <span id="output1">0</span></p>
+            <button class="rename" onclick="removePart(1)">delete</button>
         </div>
 
-        <div class="line" id="radek2">
-            <img src="IMAGES/kond.webp" onclick="otevri(2)" />
-            <p>Value: <span id=vystup2>0</span></p>
-            <button class="přepsat" onclick="smaz(2)">delete</button>
+        <div class="line" id="line2">
+            <img src="IMAGES/kond.webp" onclick="openWindow(2)" />
+            <p>count: <span id="output2">0</span></p>
+            <button class="rename" onclick="removePart(2)">delete</button>
 
         </div>
 
-        <div class="line" id="radek3">
-            <img src="IMAGES/tran.jpg" onclick="otevri(3)" />
-            <p>Value: <span id=vystup3>0</span></p>
-            <button class="přepsat" onclick="smaz(3)">delete</button>
+        <div class="line" id="line3">
+            <img src="IMAGES/tran.jpg" onclick="openWindow(3)" />
+            <p>count: <span id="output3">0</span></p>
+            <button class="rename" onclick="removePart(3)">delete</button>
 
         </div>
     </div>
 
-<div id="okno">
-    <div id="oknoObsah">
-        <h2 id="oknoNadpis"></h2>
-        <input type="text" id="novyTyp" placeholder="add type">
-        <button class="přepsat" onclick="pridejTyp()">add</button>
+<div id="window">
+    <div id="windowObsah">
+        <h2 id="windowTitle"></h2>
+        <input type="text" id="newType" placeholder="add type">
+        <button class="rename" onclick="addTyp()">add</button>
         <ul id="seznamTypu"></ul>
-        <button class="přepsat" onclick="zavri()">close</button>
+        <button class="rename" onclick="closeWindow()">close</button>
     </div>
 </div>
 
