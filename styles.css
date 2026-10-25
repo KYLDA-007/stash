@@ -87,3 +87,109 @@ button[onclick^="removeP"] {
 button[onclick^="removeP"]:hover {
     background: #e57373;
 }
+.switch {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 26px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    inset: 0;
+    background: #ccc;
+    border-radius: 26px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.slider::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+.switch input:checked + .slider {
+    background: #2e8b57;
+}
+.switch input:checked + .slider::before {
+    transform: translateX(24px);
+}
+body.dark {
+    background: #1e1e1e;
+    color: #eee;
+}
+body.dark .line,
+body.dark #windowObsah {
+    background: #2c2c2c;
+}
+body.dark img {
+    border-color: #eee;
+}
+body.dark input[type="text"],
+body.dark input[type="number"] {
+    background: #333;
+    color: #eee
+}
+.line {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.line:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+#window {
+    backdrop-filter: blur(4px);
+}
+#windowObsah {
+    animation: vyjed 0.3s ease;
+}
+@keyframes vyjed {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+input[type="text"],
+input[type="number"],
+select {
+    transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+}
+input[type="text"]:hover,
+input[type="number"]:hover,
+select:hover {
+    border-color: deepskyblue;
+    background: #e6f7ff;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: deepskyblue;
+    box-shadow: 0 0 8px rgba(0, 191, 255, 0.6);
+    background: #f5fbff;
+}   
+button {
+    transition: background 0.3s, transform 0.1s;
+
+}
+button:active {
+    transform: scale(0.95);
+}
+body.dark input[type="text"]:focus,
+body.dark input[type="number"]:focus {
+    background: #3a3a3a;
+}

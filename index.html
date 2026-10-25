@@ -12,25 +12,21 @@
 
         function add() {
             let name = document.getElementById("newName").value;
-            let soubor = document.getElementById("newPicture").files[0];
-            if (name === "" || !soubor) return;
+            let file = document.getElementById("newPicture").files[0];
+            if (name === "" || !file) return;
             let n = ++count;
-            let obr = URL.createObjectURL(soubor);
+            let img = URL.createObjectURL(file);
 
-            document.getElementById("seznam").innerHTML +=
+            document.getElementById("list").innerHTML +=
             `<li id="li${n}"><label for="number${n}">${name}</label></li>`;
 
             document.getElementById("items").innerHTML +=
             `<div class="line" id="line${n}">
-                <img src="${obr}" onclick="openWindow(${n})" />
+                <img src="${img}" onclick="openWindow(${n})" />
                 <p>count: <span id="output${n}">0</span></p>
                 <button class="rename" onclick="removePart(${n})">delete</button>
              </div>`;
 
-        }
-        function remove(n) {
-            document.getElementById("li" + n).remove();
-            document.getElementById("line" + n).remove();
         }
 
     let types = JSON.parse(localStorage.getItem("types")) || {};
@@ -43,6 +39,7 @@
         let sel = document.getElementById("newUnit");
         fill("newUnit", units[n] || []);
         fill("newVolt", volts[n] || []);
+        fill("newPower", powers[n] || []);
         drawTypes();
         document.getElementById("window").style.display = "block";
     }
@@ -50,36 +47,36 @@
         document.getElementById("window").style.display = "none";
 
     }
-    function addTyp() {
+    function addType() {
         let t = document.getElementById("newType").value;
         if (t === "") return;
         if (!types[state]) types[state] = [];
         let name = t;
-        for (let id of ["newUnit", "newVolt"]) {
+        for (let id of ["newUnit", "newVolt", "newPower"]) {
             let sel = document.getElementById(id);
             if (sel.style.display !== "none") name += " " + sel.value;
         }
         types[state].push({ name: name, count: 0});
         document.getElementById("newType").value = "";
         drawTypes();
-        safe();
+        save();
     }
     function drawTypes() {
-        let seznam = types[state] || [];
+        let list = types[state] || [];
         let html = "";
-        for (let i = 0; i < seznam.length; i++) {
-            html += `<li>${seznam[i].name}
-                <input type="number" value="${seznam[i].count}" onchange="changeCount(${i}, this.value)">
+        for (let i = 0; i < list.length; i++) {
+            html += `<li>${list[i].name}
+                <input type="number" value="${list[i].count}" onchange="changeCount(${i}, this.value)">
                 <button class="rename" onclick="removeTyp(${i})">delete</button>
             </li>`;
         }
-       document.getElementById("seznamTypu").innerHTML = html;
+       document.getElementById("typeList").innerHTML = html;
     }
 
     function changeCount(i, value) {
         types[state][i].count = value;
         updateSum(state);
-        safe();
+        save();
     }
 
     function updateSum(k) {
@@ -98,14 +95,18 @@
         types[state].splice(i, 1);
         drawTypes();
         updateSum(state);
-        safe();
+        save();
         
     }
-    function safe() {
+    function save() {
         localStorage.setItem("types", JSON.stringify(types));
     }
     window.onload = function () {
         for (let k in types) updateSum(k);
+        if (localStorage.getItem("dark") === "true"){
+            document.getElementById("darkToggle").checked = true;
+            document.body.classList.add("dark");
+        }
     };
 
     let units = {
@@ -115,8 +116,11 @@
 
     };
     let volts = {
-        2:["10V","16V","25V","35V","50","63V","100V","160V"]
+        2:["10V","16V","25V","35V","50V","63V","100V","160V"]
     };
+    let powers = {
+        1:["1/8W","0,25W","0,5W","1W","2W","3W","5W","10W"]
+    }
     function fill(id, list) {
         let sel = document.getElementById(id);
         sel.innerHTML = "";
@@ -125,12 +129,25 @@
 
 
     }
+    function toggleDark() {
+        let on = document.getElementById("darkToggle").checked;
+        document.body.classList.toggle("dark", on);
+        localStorage.setItem("dark", on);
+    }
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeWindow();
+    });
+
 
 
     </script>
      
 </head>
 <body>
+    <label class="switch">
+        <input type="checkbox" id="darkToggle" onchange="toggleDark()">
+        <span class="slider"></span>
+    </label>
     <h1>List of parts</h1>
     <hr>
     <h3><ins>Add part</ins></h3>
@@ -138,7 +155,7 @@
 <input type="file" id="newPicture" accept="image/*">
 <button class="rename" onclick="add()">add</button>
     <h3><ins>Parts</ins></h3>
-    <ol id="seznam"> 
+    <ol id="list"> 
         <li id="li1"><label for="number1">resistors</label></li>
         <li id="li2"><label for="number2">capacitors</label></li>
         <li id="li3"><label for="number3">transistors</label></li>
@@ -166,14 +183,15 @@
         </div>
     </div>
 
-<div id="window">
+<div id="window" onclick="if (event.target === this) closeWindow()">
     <div id="windowObsah">
         <h2 id="windowTitle"></h2>
         <input type="text" id="newType" placeholder="add type">
         <select id="newUnit"></select>
         <select id="newVolt"></select>
-        <button class="rename" onclick="addTyp()">add</button>
-        <ul id="seznamTypu"></ul>
+        <select id="newPower"></select>
+        <button class="rename" onclick="addType()">add</button>
+        <ul id="typeList"></ul>
         <button class="rename" onclick="closeWindow()">close</button>
     </div>
 </div>
